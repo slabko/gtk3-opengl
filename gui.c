@@ -48,10 +48,11 @@ on_realize (GtkGLArea *glarea)
 	// Make current:
 	gtk_gl_area_make_current(glarea);
 
+
 	// Print version info:
 	const GLubyte* renderer = glGetString(GL_RENDERER);
 	const GLubyte* version = glGetString(GL_VERSION);
-	printf("Renderer: %s\n", renderer);
+	printf("OpenGL Renderer: %s\n", renderer);
 	printf("OpenGL version supported %s\n", version);
 
 	// Enable depth buffer:
@@ -191,12 +192,14 @@ gui_run (void)
 {
 	// Create toplevel window, add GtkGLArea:
 	GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
 	GtkWidget *glarea = gtk_gl_area_new();
+    gtk_gl_area_set_required_version(GTK_GL_AREA(glarea), 4, 6);
 	gtk_container_add(GTK_CONTAINER(window), glarea);
 
 	// Connect GTK signals:
-	connect_window_signals(window);
-	connect_glarea_signals(glarea);
+	 connect_window_signals(window);
+	 connect_glarea_signals(glarea);
 
 	gtk_widget_show_all(window);
 

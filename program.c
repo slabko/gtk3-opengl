@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <glib.h>
 #include <GL/gl.h>
 
 #include "model.h"
@@ -8,26 +10,9 @@
 #include "program.h"
 #include "util.h"
 
-// Define inline data:
-#define DATA_DEF(x)							\
-	extern const uint8_t _binary_shaders_## x ##_glsl_start[];	\
-	extern const uint8_t _binary_shaders_## x ##_glsl_end[];
-
-#define SHADER(x)					\
-	{ .buf = _binary_shaders_ ## x ## _glsl_start	\
-	, .end = _binary_shaders_ ## x ## _glsl_end	\
-	}
-
-// Inline data definitions:
-DATA_DEF (bkgd_vertex)
-DATA_DEF (bkgd_fragment)
-DATA_DEF (cube_vertex)
-DATA_DEF (cube_fragment)
-
 // Shader structure:
 struct shader {
-	const uint8_t	*buf;
-	const uint8_t	*end;
+    const char *filename;
 	GLuint		 id;
 };
 
@@ -74,14 +59,14 @@ static struct program {
 }
 programs[] = {
 	[BKGD] = {
-		.shader.vert = SHADER (bkgd_vertex),
-		.shader.frag = SHADER (bkgd_fragment),
+		.shader.vert = {.filename = "shaders/bkgd/vertex.glsl"},
+		.shader.frag = {.filename = "shaders/bkgd/fragment.glsl"},
 		.loc         = loc_bkgd,
 		.nloc        = NELEM(loc_bkgd),
 	},
 	[CUBE] = {
-		.shader.vert = SHADER (cube_vertex),
-		.shader.frag = SHADER (cube_fragment),
+            .shader.vert = {.filename = "shaders/cube/vertex.glsl"},
+            .shader.frag = {.filename = "shaders/cube/fragment.glsl"},
 		.loc         = loc_cube,
 		.nloc        = NELEM(loc_cube),
 	},
@@ -122,14 +107,19 @@ check_link (GLuint program)
 static void
 create_shader (struct shader *shader, GLenum type)
 {
-	const GLchar *buf = (const GLchar *) shader->buf;
-	GLint len = shader->end - shader->buf;
+    GLchar *buf = NULL;
+    gsize bytes_read;
+    gboolean success = g_file_get_contents(shader->filename, &buf, &bytes_read, NULL);
+    g_assert(success);
+	GLint len = (int)bytes_read;
 
+    const GLchar *const_buf = buf;
 	shader->id = glCreateShader(type);
-	glShaderSource(shader->id, 1, &buf, &len);
+	glShaderSource(shader->id, 1, &const_buf, &len);
 	glCompileShader(shader->id);
 
 	check_compile(shader->id);
+    free(buf);
 }
 
 static void

@@ -1,5 +1,7 @@
 #include <gdk/gdk.h>
 #include <GL/gl.h>
+#include <stdbool.h>
+#include <glib.h>
 
 #include "program.h"
 
@@ -76,19 +78,16 @@ background_draw (void)
 void
 background_init (void)
 {
-	// Inline data declaration:
-	extern char _binary_textures_background_png_start[];
-	extern char _binary_textures_background_png_end[];
-
-	char *start = _binary_textures_background_png_start;
-	size_t len = _binary_textures_background_png_end
-		   - _binary_textures_background_png_start;
+    char *buffer = NULL;
+    gsize len = 0;
+    gboolean success = g_file_get_contents("textures/background.png", &buffer, &len, NULL);
+    g_assert(success);
 
 	GInputStream *stream;
 	GdkPixbuf *pixbuf;
 
 	// Create an input stream from inline data:
-	stream = g_memory_input_stream_new_from_data(start, len, NULL);
+	stream = g_memory_input_stream_new_from_data(buffer, (long)len, NULL);
 
 	// Generate a pixbuf from the input stream:
 	pixbuf = gdk_pixbuf_new_from_stream(stream, NULL, NULL);
@@ -117,4 +116,6 @@ background_init (void)
 
 	// Generate empty vertex array object:
 	glGenVertexArrays(1, &vao);
+
+    free(buffer);
 }
