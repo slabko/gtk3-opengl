@@ -21,5 +21,5 @@ void main (void)
 	vec3 scaled = linear * vec3(fdot * dst);
 
 	/* Restore gamma and output this color: */
-	fragcolor = vec4(pow(scaled, vec3(2.2)), 0.0);
+	fragcolor = vec4(pow(scaled, vec3(2.2)), 1.0);
 }

@@ -9,8 +9,8 @@ add_link_options(-lm -pthread)
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-# pkg_check_modules(GTK3 REQUIRED gtk4)
+# pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+pkg_check_modules(GTK3 REQUIRED gtk4)
 pkg_check_modules(GL REQUIRED gl)
 include_directories(
         ${GTK3_INCLUDE_DIRS}
