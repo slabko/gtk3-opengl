@@ -7,14 +7,10 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(-std=c99 -pthread)
 add_link_options(-lm -pthread)
 
-add_compile_options(-fsanitize=address)
-add_link_options(-fsanitize=address)
-add_compile_options(-fsanitize=undefined)
-add_link_options(-fsanitize=undefined)
-
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+# pkg_check_modules(GTK3 REQUIRED gtk4)
 pkg_check_modules(GL REQUIRED gl)
 include_directories(
         ${GTK3_INCLUDE_DIRS}
